@@ -106,7 +106,7 @@ if [ "$ngalechange" != 'Already up-to-date.' ] || [ "$1" = "-f" ]; then
 
 		# Creating a folder and moving the file to be reachable
 		mkdir $compiled/$ngalebuild
-		mkdir $compiled/$ngalebuild/addons
+		[ "$osname" == "linux" ] && mkdir $compiled/$ngalebuild/addons
 		[ "$osname" != "macosx" ] && mv nightingale-${version}-${buildnumber}_${osname}-${arch}.* $compiled/$ngalebuild
 		mv changes.txt $compiled/$ngalebuild
 		mv README.md $compiled/$ngalebuild
@@ -135,7 +135,7 @@ if [ "$ngalechange" != 'Already up-to-date.' ] || [ "$1" = "-f" ]; then
 		cd "${compiled}"
 		rsync -e ssh $ngalebuild ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 		rsync -e ssh latest ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
-		rsync -e ssh $ngalebuild/addons ngaleoss@getnightingale.com://home//ngaleoss//addon-files.getnightingale.com//xpis//nightlies -r --progress
+		[ -d "$compiled/latest/addons" ] && rsync -e ssh $ngalebuild/addons ngaleoss@getnightingale.com://home//ngaleoss//addon-files.getnightingale.com//xpis//nightlies -r --progress
 	else
 		echo "Build failed! See buildlog for details"
 	fi
