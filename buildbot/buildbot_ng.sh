@@ -1,12 +1,12 @@
-#!/bin/bash
+# !/bin/bash
 
 set -e
 
-# Include the config file
+#  Include the config file
 source config.sh
 export PATH=$PATH
 
-# Check the OS
+#  Check the OS
 case $OSTYPE in
 	linux*)   osname='linux' ;;
 	msys*)    osname='windows' ;;
@@ -19,51 +19,51 @@ esac
 if [ "$osname" == "macosx" ]; then
 	arch="i686"
 else
-	# Check the architecture platform (eg. i686)
+	#  Check the architecture platform (eg. i686)
 	arch=`uname -m`
 fi
 
-# Today date
+#  Today date
 ngalebuild=`date "+%Y-%m-%d"`
 
-# One day before to get git changes
+#  One day before to get git changes
 if [ "$osname" == "macosx" ]; then
 	daybefore=`date -v -1d "+%Y-%m-%d"`
 else
 	daybefore=`date "+%Y-%m-%d" --date '1 days ago'`
 fi
 
-# Going to the repo folder
+#  Going to the repo folder
 cd "${repo}"
 
-# Clean up
+#  Clean up
 git reset --hard
 
-# Checkout the right branch
+#  Checkout the right branch
 git checkout ${branch}
 
-# Fetch changes from GitHub
+#  Fetch changes from GitHub
 git fetch origin
-# Merge
+#  Merge
 
 ngalechange=`git merge origin/${branch}`
 
-# If there are new changes or using -f parameter,
-# let's build !
+#  If there are new changes or using -f parameter,
+#  let's build !
 if [ "$ngalechange" != 'Already up-to-date.' ] || [ "$1" = "-f" ]; then
-	# Get the buildnumber
+	#  Get the buildnumber
 	buildnumber=`cat build/sbBuildInfo.mk.in | grep BuildNumber= | sed -e 's/BuildNumber=//g'`
-	# Get the version
+	#  Get the version
 	version=`cat build/sbBuildInfo.mk.in | grep SB_MILESTONE= | sed 's/SB_MILESTONE=//g'`
-	# Get the branchname
+	#  Get the branchname
 	branchname=`cat build/sbBuildInfo.mk.in | grep SB_BRANCHNAME= | sed 's/SB_BRANCHNAME=//g'`
 
-	# Check if we are on trunk
+	#  Check if we are on trunk
 	if [ "$branchname" != 'sb-trunk-oldxul' ]; then
 		branchname=`echo $branchname | sed 's/Songbird//g'`
 	fi
 
-	# remove old build
+	#  remove old build
 	make clobber
 
 	cd ${repo}
@@ -89,32 +89,36 @@ if [ "$ngalechange" != 'Already up-to-date.' ] || [ "$1" = "-f" ]; then
 		fi
 
 		if [ "$osname" == "windows" ]; then
-			#Zip
+			# Zip
 			zip -r -9 nightingale-${version}-${buildnumber}_${osname}-${arch}.zip Nightingale
-			#Making a md5sum
+			# Making a md5sum
 			md5sum nightingale-${version}-${buildnumber}_${osname}-${arch}.zip > nightingale-${version}-${buildnumber}_${osname}-${arch}.zip.md5
 		else
 			if [ "$osname" != "macosx" ]; then
-				#Tar then bz2
+				# Tar then bz2
 				tar cvf nightingale-${version}-${buildnumber}_${osname}-${arch}.tar Nightingale
 				bzip2 nightingale-${version}-${buildnumber}_${osname}-${arch}.tar
 
-				#Making a md5 sum
+				# Making a md5 sum
 				md5sum nightingale-${version}-${buildnumber}_${osname}-${arch}.tar.bz2 > nightingale-${version}-${buildnumber}_${osname}-${arch}.tar.bz2.md5
 			fi
 		fi
 
-		#Creating a folder and moving the file to be reachable
+		# Creating a folder and moving the file to be reachable
 		mkdir $compiled/$ngalebuild
 		mkdir $compiled/$ngalebuild/addons
 		[ "$osname" != "macosx" ] && mv nightingale-${version}-${buildnumber}_${osname}-${arch}.* $compiled/$ngalebuild
 		mv changes.txt $compiled/$ngalebuild
 		mv README.md $compiled/$ngalebuild
-		mv xpi-stage/albumartlastfm/*.xpi $compiled/$ngalebuild/addons
-		mv xpi-stage/audioscrobbler/*.xpi $compiled/$ngalebuild/addons
-		mv xpi-stage/concerts/*.xpi $compiled/$ngalebuild/addons
-		mv xpi-stage/mashTape/*.xpi $compiled/$ngalebuild/addons
-		mv xpi-stage/shoutcast-radio/*.xpi $compiled/$ngalebuild/addons
+
+		# Unless we have binary addons, we should always use the Linux built ones
+		if [ "$osname" = "linux" ]; then
+			mv xpi-stage/albumartlastfm/*.xpi $compiled/$ngalebuild/addons
+			mv xpi-stage/audioscrobbler/*.xpi $compiled/$ngalebuild/addons
+			mv xpi-stage/concerts/*.xpi $compiled/$ngalebuild/addons
+			mv xpi-stage/mashTape/*.xpi $compiled/$ngalebuild/addons
+			mv xpi-stage/shoutcast-radio/*.xpi $compiled/$ngalebuild/addons
+		fi
 
 		if [ "$osname" == "windows" ] || [ "$osname" = "macosx" ]; then
 			mv _built_installer/* $compiled/$ngalebuild
@@ -128,7 +132,7 @@ if [ "$ngalechange" != 'Already up-to-date.' ] || [ "$1" = "-f" ]; then
 
 		cp $compiled/$ngalebuild/* $compiled/latest -r
 
-		#Uploading on sourceforge.net
+		# Uploading on sourceforge.net
 		cd "${compiled}"
 		rsync -e ssh $ngalebuild ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 		rsync -e ssh latest ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
