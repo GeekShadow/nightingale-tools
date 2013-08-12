@@ -19,9 +19,6 @@ esac
 # Make sure the ssh keys are setup
 ssh-add
 
-# Are we forcing a build or force uploading? -f is build and upload, -fu is upload only
-force=$1
-
 # Check the architecture
 [ "$osname" == "macosx" ] && arch="i686" || arch=`uname -m`
 
@@ -34,8 +31,11 @@ ngalebuild=`date "+%Y-%m-%d"`
 # Get our functions
 source functions.sh
 
+# Are we forcing a build or force uploading? -f is build and upload
+[ ! -z $1 ] && [ $1 = "-f" ] && build=1 || build=doUpdate
+
 # Update, and build if we have changes
-if [ doUpdate ] || [ $force == "-f" ]; then
+if $build; then
 	cd $repo
 
 	# Get the buildnumber
