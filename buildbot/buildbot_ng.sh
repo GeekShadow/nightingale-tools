@@ -17,13 +17,13 @@ case $OSTYPE in
 esac
 
 # Check the architecture
-[ "$osname" == "macosx" ] && { arch="i686" } || { arch=`uname -m` }
+[ "$osname" == "macosx" ] && arch="i686" || arch=`uname -m`
 
 # Today's date
 ngalebuild=`date "+%Y-%m-%d"`
 
 # One day before to get git changes
-[ "$osname" == "macosx" ] && { daybefore=`date -v -1d "+%Y-%m-%d"` } || { daybefore=`date "+%Y-%m-%d" --date '1 days ago'` }
+[ "$osname" == "macosx" ] && daybefore=`date -v -1d "+%Y-%m-%d"` || daybefore=`date "+%Y-%m-%d" --date '1 days ago'`
 
 # Update, and build if we have changes
 if [ doUpdate ]; then
