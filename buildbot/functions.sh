@@ -77,8 +77,8 @@ function makePackage() {
 	fi
 
 	# Creating a folder and moving the file to be reachable
-	mkdir $compiled/$ngalebuild
-	mkdir $compiled/$ngalebuild/addons
+	[ -d "$compiled/$ngalebuild/addons" ] && rm -rf "$compiled/$ngalebuild/addons"
+	mkdir -p "$compiled/$ngalebuild/addons"
 
 	[ "$osname" != "macosx" ] && mv nightingale-$1-$3_$osname-$arch.* $compiled/$ngalebuild
 	mv changes.txt $compiled/$ngalebuild
@@ -94,7 +94,7 @@ function makePackage() {
 	[ -d _built_installer ] && mv _built_installer/* $compiled/$ngalebuild
 
 	# Remove the old local "latest" directory
-	[ -d "$compiled/latest" ] && rm -rf "$compiled/latest/*" || mkdir "$compiled/latest"
+	[ -d "$compiled/latest" ] && rm -rf "$compiled/latest/*"
 	
 	# Copy everything over to "latest" ...rsync because Macs are weird
 	rsync -aPr $compiled/$ngalebuild/* $compiled/latest
