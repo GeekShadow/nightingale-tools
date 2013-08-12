@@ -29,8 +29,10 @@ function buildNgale() {
 	# Build!!!
 	bash ./build.sh | tee "$repo/buildlog"
 
+	curhash=`grep Succeeded buildlog`
+
 	# If everything worked...
-	[ "`grep Succeeded buildlog`" ] && echo $curhash > "$compiled/lastbuilt.txt" && return 0 || return 1
+	[ "`grep Succeeded buildlog`" ] && echo `git rev-parse HEAD` > "$compiled/lastbuilt.txt" && return 0 || return 1
 }
 
 function makePackage() {
