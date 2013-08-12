@@ -51,7 +51,7 @@ if [ doUpdate ] || [ $force == "-f" ]; then
 	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
 
 	# Build, package, and upload if we don't hit any errors
-	[ buildNgale ] && [ makePackage $version $branchname $buildnumber ] && [ uploadPackages ] && echo "Buildbot complete." || echo "Build error." && exit 1
+	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages && echo "Buildbot complete." || echo "Build, packaging, or upload error." && exit 1
 else
 	echo "No changes since last time, exiting."
 	exit 0
