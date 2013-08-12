@@ -19,6 +19,9 @@ esac
 # Make sure the ssh keys are setup
 ssh-add
 
+# Are we forcing a build or force uploading? -f is build and upload, -fu is upload only
+force=$1
+
 # Check the architecture
 [ "$osname" == "macosx" ] && arch="i686" || arch=`uname -m`
 
@@ -32,7 +35,7 @@ ngalebuild=`date "+%Y-%m-%d"`
 source functions.sh
 
 # Update, and build if we have changes
-if [ doUpdate ]; then
+if [ doUpdate ] || [ $force == "-f" ]; then
 	cd $repo
 
 	# Get the buildnumber
@@ -46,8 +49,18 @@ if [ doUpdate ]; then
 
 	# Check if we are on trunk
 	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
+	
+	# Get the current hash	
+	curhash=`git rev-parse HEAD`
 
-	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages && echo "Buildbot success!" && exit 0 || echo "We encountered a build error." exit 1
+	if [ buildNgale lasthash ]; then
+		makePackage $version $branchname $buildnumber
+		uploadPackages
+	else
+		echo "Build error."
+		exit 1
+	fi
 else
 	echo "No changes since last time, exiting."
+	exit 0
 fi

@@ -16,11 +16,8 @@ function doUpdate() {
 	# Get the hash for the last built version
 	[ -f "$compiled/lastbuilt.txt" ] && lasthash=`cat "$compiled/lastbuilt.txt"` || lasthash="new" 
 	
-	# Get the current hash	
-	lasthash=`git rev-parse HEAD`	
-	
 	# Return true if we need to rebuild
-	[ "$curhash" != "$lasthash" ] && return 0 || return 1
+	[ "`git rev-parse HEAD`" != "$lasthash" ] && return 0 || return 1
 }
 
 function buildNgale() {
@@ -33,13 +30,10 @@ function buildNgale() {
 	bash ./build.sh | tee "$repo/buildlog"
 
 	# If everything worked...
-	[ "`grep Succeeded buildlog`" ] && return 0 || return 1
+	[ "`grep Succeeded buildlog`" ] && echo $curhash > "$compiled/lastbuilt.txt" && return 0 || return 1
 }
 
 function makePackage() {
-	# Store the currently built hash as the last since it succeeded
-	echo $curhash > "$compiled/lastbuilt.txt"
-
 	mv compiled/dist compiled/Nightingale
 	cd compiled
 
@@ -108,4 +102,9 @@ function uploadPackages() {
 	rsync -e ssh $ngalebuild ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 	rsync -e ssh latest ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 	rsync -e ssh $ngalebuild/addons ngaleoss@getnightingale.com://home//ngaleoss//addon-files.getnightingale.com//xpis//nightlies -r --progress
+}
+
+function quitWithError() {
+	echo $1
+	exit 1
 }
