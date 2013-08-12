@@ -44,9 +44,7 @@ if [ doUpdate ]; then
 	# Check if we are on trunk
 	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
 
-	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages || echo "We encountered a build error."
+	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages && echo "Buildbot success!" && exit 0 || echo "We encountered a build error." exit 1
 else
 	echo "No changes since last time, exiting."
 fi
-
-exit 0
