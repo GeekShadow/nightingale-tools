@@ -99,7 +99,7 @@ function makePackage() {
 	# Copy everything over to "latest" ...rsync because Macs are weird
 	rsync -aPr $compiled/$ngalebuild/* $compiled/latest
 	
-	uploadPackages
+	return 0
 }
 
 function uploadPackages() {
