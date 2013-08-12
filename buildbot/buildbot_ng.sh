@@ -49,9 +49,6 @@ if [ doUpdate ] || [ $force == "-f" ]; then
 
 	# Check if we are on trunk
 	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
-	
-	# Get the current hash	
-	curhash=`git rev-parse HEAD`
 
 	if [ buildNgale ]; then
 		makePackage $version $branchname $buildnumber
