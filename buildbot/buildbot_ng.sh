@@ -1,4 +1,4 @@
-#!/bin/bash
+-#!/bin/bash
 
 set -e
 
@@ -39,9 +39,9 @@ if [ doUpdate ]; then
 	branchname=`cat build/sbBuildInfo.mk.in | grep SB_BRANCHNAME= | sed 's/SB_BRANCHNAME=//g'`
 
 	# Check if we are on trunk
-	[ "$branchname" != 'sb-trunk-oldxul' ] && { branchname=`echo $branchname | sed 's/Songbird//g'` }
+	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
 
-	[ buildNgale ] && [ makePackage($version, $branchname, $buildnumber) ] && uploadPackages || echo "We encountered a build error."
+	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages || echo "We encountered a build error."
 else
 	echo "No changes since last time, exiting."
 fi
