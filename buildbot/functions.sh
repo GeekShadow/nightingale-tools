@@ -102,9 +102,6 @@ function uploadPackages() {
 	rsync -e ssh $ngalebuild ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 	rsync -e ssh latest ${sfnetuser}@frs.sourceforge.net://home//pfs//project//ngale//${branchname}-Nightlies -r --progress
 	rsync -e ssh $ngalebuild/addons ngaleoss@getnightingale.com://home//ngaleoss//addon-files.getnightingale.com//xpis//nightlies -r --progress
-}
-
-function quitWithError() {
-	echo $1
-	exit 1
+	
+	return 0
 }
