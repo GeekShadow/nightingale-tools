@@ -53,7 +53,7 @@ if [ doUpdate ] || [ $force == "-f" ]; then
 	# Get the current hash	
 	curhash=`git rev-parse HEAD`
 
-	if [ buildNgale lasthash ]; then
+	if [ buildNgale ]; then
 		makePackage $version $branchname $buildnumber
 		uploadPackages
 	else
