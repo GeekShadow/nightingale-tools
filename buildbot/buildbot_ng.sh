@@ -16,9 +16,6 @@ case $OSTYPE in
 	*)        osname='unknown' ;;
 esac
 
-# Make sure the ssh keys are setup
-ssh-add
-
 # Check the architecture
 [ "$osname" == "macosx" ] && arch="i686" || arch=`uname -m`
 
