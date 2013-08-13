@@ -29,7 +29,7 @@ ngalebuild=`date "+%Y-%m-%d"`
 source functions.sh
 
 # Are we forcing a build or force uploading? -f is build and upload
-[ ! -z $1 ] && [ $1 = "-f" ] && build=1 || build=doUpdate
+[ ! -z $1 ] && [ $1 = "-f" ] && build=0 || build=doUpdate
 
 # Update, and build if we have changes
 if $build; then
@@ -48,7 +48,7 @@ if $build; then
 	[ "$branchname" != 'sb-trunk-oldxul' ] && branchname=`echo $branchname | sed 's/Songbird//g'`
 
 	# Build, package, and upload if we don't hit any errors
-	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages && echo "Buildbot complete." || echo "Build, packaging, or upload error." && exit 1
+	buildNgale && makePackage $version $branchname $buildnumber && uploadPackages && echo "Buildbot complete." && exit 0 || echo "Build, packaging, or upload error." && exit 1
 else
 	echo "No changes since last time, exiting."
 	exit 0
